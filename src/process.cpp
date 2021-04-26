@@ -3,6 +3,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include "linux_parser.h"
 #include "process.h"
@@ -12,6 +13,10 @@ using std::to_string;
 using std::vector;
 Process::Process(int pid):pid_(pid){
  foldername_ = LinuxParser::kProcDirectory + std::to_string(pid_)+"/";
+//  Process::CpuUtilization();
+ Process::UpTime();
+//  std::cout<<this->cpu_usage_;
+    // std::cout<<pid_;
 }
 
 
@@ -22,9 +27,10 @@ int Process::Pid() { return pid_; }
 float Process::CpuUtilization() { 
     vector<long int> vec{};
     long int v;
-    string line, parse,a2,a3;
-    int  v_check = 1 , a1;
+    string line, parse,a2,a3, a1;
+    int  v_check = 1;
     float value;
+    long uptime = LinuxParser::UpTime(); // this is the uptime of the system
 
     std::ifstream stream(foldername_ + LinuxParser::kStatFilename);
     if (stream.is_open()) {
@@ -34,6 +40,16 @@ float Process::CpuUtilization() {
         while(linestream>>v){
             vec.push_back(v);
         }
+    }
+    try{
+    // vec will have element from 4th 
+    long int total_time = vec[10] + vec[11] + vec[12] + vec[13];
+    float seconds = (float) uptime - ((float)(vec[18])/(float) sysconf(_SC_CLK_TCK));
+    cpu_usage_ = ((float)total_time / (float) sysconf(_SC_CLK_TCK))/seconds;
+    return cpu_usage_;
+    }
+    catch(...){
+        return 0.0;
     }
 }
 
@@ -59,7 +75,8 @@ string Process::Ram() {
         while(std::getline(stream, line)){
             std::istringstream linestream(line);
             linestream >> VmSize >> value;
-            if (VmSize == "VmSize"){
+            if (VmSize == "VmSize:"){
+                // std::cout<<value<<"\n";
                 value = value/1000;
                 return std::to_string (value);
             }
@@ -99,26 +116,35 @@ string Process::User() {
 
 // TODO: Return the age of this process (in seconds)
 long int Process::UpTime() { 
-    string line, parse;
+    string line, word;
     int  v_check = 1 ;
     long int value;
     std::ifstream stream(foldername_ + LinuxParser::kStatFilename);
     if (stream.is_open()) {
+
         std::getline(stream, line);
         std::istringstream linestream(line);
-        while(linestream>>parse){
-            v_check++;
-            if  (v_check==22){
-            break;
-            }
+        for (int i =0; i<22; i++){
+            linestream>>word;
         }
     }
-    std::stringstream g(parse);
-    g>>value;
+    try{
+    value = std::stol(word);
     value = value / sysconf(_SC_CLK_TCK);
-    return value;
+    // std::cout<<"from here2";
+
+    return value;}
+    catch(...){
+        // std::cout<<"from here";
+        return 0;
+    }
  }
 
 // TODO: Overload the "less than" comparison operator for Process objects
 // REMOVE: [[maybe_unused]] once you define the function
-bool Process::operator<(Process const& a[[maybe_unused]]) const { return true; }
+
+bool Process::operator<(Process  const& a) const{ 
+    float const cpu_usage_self = this->cpu_usage_;
+    float const cpu_usage_compare = a.cpu_usage_;
+    return cpu_usage_compare> cpu_usage_self;
+}
