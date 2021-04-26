@@ -19,15 +19,11 @@ using std::sort;
 bool Compare(Process P1, Process P2){
     try{
         bool v = (P1<P2);
-        bool v2 = ~v;
     return v;
     }
     catch(...){
         return false;
     }
-}
-void sorter(vector<Process> *p){
-    sort(p->begin(), p->end(), Compare);
 }
 
 // TODO: Return the system's CPU
@@ -40,33 +36,10 @@ vector<Process>& System::Processes() {
     vector<Process> process_vec{};
     for(auto pid : pid_vec){
         Process p{pid};
-        processes_.push_back(p);
+        process_vec.push_back(p);
     }
-    // Process p1 = processes_[0];
-    // std::cout<<"this is from"<<p1.CpuUtilization()<<"\n";
-    // Process p2 = processes_[1];
-    // std::cout<<"this is from2"<<p2.CpuUtilization()<<"\n";
-    // bool t = Compare(p1, p2);
-
-    // std::cout<<"this is from bool"<<t<<"\n";
-
-    // process_vec = processes_;
-    // sorter(&process_vec);
-    // for (auto i : processes_){
-    //     std::cout<<i.cpu_usage_;
-    // } 
-
-    
-
-
-    // Process
-    
-    sort(processes_.begin(), processes_.end(), Compare);
-
-    
-    
-    
-    
+    sort(process_vec.begin(), process_vec.end(), Compare);
+    processes_= process_vec;
     return processes_; }
 
 // TODO: Return the system's kernel identifier (string)

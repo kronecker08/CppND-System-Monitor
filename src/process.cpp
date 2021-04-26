@@ -25,27 +25,22 @@ int Process::Pid() { return pid_; }
 
 // TODO: Return this process's CPU utilization
 float Process::CpuUtilization() { 
-    vector<long int> vec{};
-    long int v;
-    string line, parse,a2,a3, a1;
-    int  v_check = 1;
-    float value;
+    vector<string> vec{};
+    string line, word;
     long uptime = LinuxParser::UpTime(); // this is the uptime of the system
 
     std::ifstream stream(foldername_ + LinuxParser::kStatFilename);
     if (stream.is_open()) {
         std::getline(stream, line);
         std::istringstream linestream(line);
-        linestream>>a1>>a2>>a3;
-        while(linestream>>v){
-            vec.push_back(v);
+        while(linestream>>word){
+            vec.push_back(word);
         }
     }
     try{
-    // vec will have element from 4th 
-    long int total_time = vec[10] + vec[11] + vec[12] + vec[13];
-    float seconds = (float) uptime - ((float)(vec[18])/(float) sysconf(_SC_CLK_TCK));
-    cpu_usage_ = ((float)total_time / (float) sysconf(_SC_CLK_TCK))/seconds;
+    float total_time = (std::stof(vec[13]) + std::stof(vec[14]) + std::stof(vec[15]) + std::stof(vec[16]))/ ((float) sysconf(_SC_CLK_TCK));
+    float seconds = (float) uptime - ((std::stof(vec[21])/(float) sysconf(_SC_CLK_TCK)));
+    cpu_usage_ = total_time /seconds;
     return cpu_usage_;
     }
     catch(...){
@@ -89,13 +84,13 @@ string Process::Ram() {
 string Process::User() { 
     string Uid;
     int value, value_pass;
-    string line, user;
+    string line, user, st;
     std::ifstream stream(foldername_ + LinuxParser::kStatusFilename);
     if (stream.is_open()) {
         while(std::getline(stream, line)){
             std::istringstream linestream(line);
             linestream >> Uid >> value;
-            if (Uid == "Uid"){
+            if (Uid == "Uid:"){
                  break;
             }
         }
@@ -105,7 +100,7 @@ string Process::User() {
         while(std::getline(stream2, line)){
             std::replace(line.begin(), line.end(), ':', ' ');
             std::istringstream linestream2(line);
-            linestream2 >> user >> value_pass;
+            linestream2 >> user >> st >> value_pass;
             if (value_pass == value){
                  return user;
             }
@@ -117,7 +112,6 @@ string Process::User() {
 // TODO: Return the age of this process (in seconds)
 long int Process::UpTime() { 
     string line, word;
-    int  v_check = 1 ;
     long int value;
     std::ifstream stream(foldername_ + LinuxParser::kStatFilename);
     if (stream.is_open()) {
@@ -143,8 +137,8 @@ long int Process::UpTime() {
 // TODO: Overload the "less than" comparison operator for Process objects
 // REMOVE: [[maybe_unused]] once you define the function
 
-bool Process::operator<(Process  const& a) const{ 
-    float const cpu_usage_self = this->cpu_usage_;
-    float const cpu_usage_compare = a.cpu_usage_;
-    return cpu_usage_compare> cpu_usage_self;
+bool Process::operator<(Process  & a) { 
+    float const cpu_usage_self = this->CpuUtilization();
+    float const cpu_usage_compare = a.CpuUtilization();
+    return cpu_usage_compare< cpu_usage_self;
 }
