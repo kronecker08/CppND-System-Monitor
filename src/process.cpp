@@ -13,10 +13,7 @@ using std::to_string;
 using std::vector;
 Process::Process(int pid):pid_(pid){
  foldername_ = LinuxParser::kProcDirectory + std::to_string(pid_)+"/";
-//  Process::CpuUtilization();
  Process::UpTime();
-//  std::cout<<this->cpu_usage_;
-    // std::cout<<pid_;
 }
 
 

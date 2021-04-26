@@ -18,9 +18,7 @@ float Processor::Utilization() {
     std::istringstream linestream(line);
     linestream>>cpu;
     if (cpu == "cpu"){
-        while (linestream>>value)
-        {
-            // std::cout<<value<<"\n";
+        while (linestream>>value){
             values.push_back(value);
         }   
     }

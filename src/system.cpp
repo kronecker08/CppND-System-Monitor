@@ -17,13 +17,7 @@ using std::string;
 using std::vector;
 using std::sort;
 bool Compare(Process P1, Process P2){
-    try{
-        bool v = (P1<P2);
-    return v;
-    }
-    catch(...){
-        return false;
-    }
+    return (P1<P2); 
 }
 
 // TODO: Return the system's CPU
@@ -43,18 +37,24 @@ vector<Process>& System::Processes() {
     return processes_; }
 
 // TODO: Return the system's kernel identifier (string)
-std::string System::Kernel() { return LinuxParser::Kernel(); }
+std::string System::Kernel() { 
+    return LinuxParser::Kernel(); 
+    }
 
 // TODO: Return the system's memory utilization
-float System::MemoryUtilization() { return LinuxParser::MemoryUtilization(); }
+float System::MemoryUtilization() { 
+    return LinuxParser::MemoryUtilization(); 
+    }
 
 // TODO: Return the operating system name
 std::string System::OperatingSystem() { 
-    std::string os = LinuxParser::OperatingSystem();
-    return os; }
+    return LinuxParser::OperatingSystem(); 
+    }
 
 // TODO: Return the number of processes actively running on the system
-int System::RunningProcesses() { return LinuxParser::RunningProcesses(); }
+int System::RunningProcesses() { 
+    return LinuxParser::RunningProcesses();
+    }
 
 // TODO: Return the total number of processes on the system
 int System::TotalProcesses() { 
@@ -62,4 +62,6 @@ int System::TotalProcesses() {
     }
 
 // TODO: Return the number of seconds since the system started running
-long int System::UpTime() { return LinuxParser::UpTime(); }
+long int System::UpTime() { 
+    return LinuxParser::UpTime(); 
+    }
