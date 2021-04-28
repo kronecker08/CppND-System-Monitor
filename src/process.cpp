@@ -59,15 +59,15 @@ string Process::Command() {
 
 // TODO: Return this process's memory utilization
 string Process::Ram() { 
-    string VmSize;
+    string VmData;
     int value;
     string line;
     std::ifstream stream(foldername_ + LinuxParser::kStatusFilename);
     if (stream.is_open()) {
         while(std::getline(stream, line)){
             std::istringstream linestream(line);
-            linestream >> VmSize >> value;
-            if (VmSize == "VmSize:"){
+            linestream >> VmData >> value;
+            if (VmData == "VmData:"){
                 // std::cout<<value<<"\n";
                 value = value/1000;
                 return std::to_string (value);
@@ -110,6 +110,7 @@ string Process::User() {
 long int Process::UpTime() { 
     string line, word;
     long int value;
+    long uptime = LinuxParser::UpTime();
     std::ifstream stream(foldername_ + LinuxParser::kStatFilename);
     if (stream.is_open()) {
 
@@ -121,7 +122,7 @@ long int Process::UpTime() {
     }
     try{
     value = std::stol(word);
-    value = value / sysconf(_SC_CLK_TCK);
+    value = uptime - (value / sysconf(_SC_CLK_TCK));
     // std::cout<<"from here2";
 
     return value;}
